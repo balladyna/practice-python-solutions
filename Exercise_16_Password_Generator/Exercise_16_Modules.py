@@ -1,6 +1,8 @@
 import string
 import random
 
+prompt = ">>> "
+
 
 class Option:
     yes = "1"
@@ -21,7 +23,7 @@ class Message:
                   "3. exit from program\n"
     weak_result = "Here are propositions of two passwords:"
     character_password = "How many characters your password should have? " \
-                         "You can choose between 5 and 20 characters. For exit choose 3.\n"
+                         "You can choose between 5 and 20 characters.\n"
     strong_result = "Your new password is:\n"
     wrong_input = "Wrong input!"
     goodbye = "Goodbye!"
@@ -40,22 +42,24 @@ weak_password_list = ['123456', '123456789', '12345', 'qwerty', 'password', '123
                       'superman', 'master', 'azerty', 'ashley', 'target123', 'baseball', 'qwerty', 'soccer', 'charlie',
                       'tinkle', 'jessica', 'q1w2e3r4t5']
 
-prompt = ">>> "
+
+def generate_passwords_from_list(list_name):
+    weak_password_one = random.choice(list_name)
+    weak_password_two = random.choice(list_name)
+    if weak_password_two == weak_password_one:
+        weak_password_two = random.choice(list_name)
+    else:
+        print(Message.weak_result)
+        print(weak_password_one + " and " + weak_password_two)
+        return weak_password_one + "\n" + weak_password_two
 
 
 def generate_weak_password():
     user_input = input(Message.weak_option + prompt)
     while Option.no != user_input:
         if Option.yes == user_input:
-            weak_password_one = random.choice(weak_password_list)
-            weak_password_two = random.choice(weak_password_list)
-            if weak_password_two == weak_password_one:
-                weak_password_two = random.choice(weak_password_list)
-            else:
-                print(Message.weak_result)
-                print(weak_password_one + " and " + weak_password_two)
-                print(Message.goodbye)
-                exit()
+            generate_passwords_from_list(weak_password_list)
+            exit()
         elif Option.no == user_input:
             break
         elif Option.exit_program == user_input:
@@ -67,6 +71,16 @@ def generate_weak_password():
 
 
 def generate_strong_password():
+    password_length_input = input(Message.character_password + prompt)
+    if password_length_input.isnumeric():
+        if 5 <= int(password_length_input) <= 20:
+            generated_string = string.ascii_letters + string.digits + string.punctuation
+            password = ''.join(random.choices(generated_string, k=int(password_length_input)))
+            print(Message.strong_result + password)
+            return password
+
+
+def generate_strong_password_loop():
     while True:
         password_length_input = input(Message.character_password + prompt)
         if password_length_input.isnumeric():
@@ -76,26 +90,7 @@ def generate_strong_password():
                 print(Message.strong_result + password)
                 print(Message.goodbye)
                 exit()
-            elif Option.exit_program == password_length_input:
-                print(Message.goodbye)
-                exit()
             else:
                 print(Message.wrong_input)
         else:
             print(Message.wrong_input)
-
-
-while True:
-    user_password_option = input(Message.new_password + prompt)
-    match user_password_option:
-        case Option.weak_password:
-            generate_weak_password()
-            continue
-        case Option.strong_password:
-            generate_strong_password()
-        case Option.exit_program:
-            print(Message.goodbye)
-            exit()
-        case _:
-            print(Message.wrong_input)
-            continue
